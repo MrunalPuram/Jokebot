@@ -1,6 +1,8 @@
 import time
 import csv
 import sys
+import requests
+import json
 
 def deliver(prompt, punchline):
     print(prompt)
@@ -28,14 +30,29 @@ def read_joke(file_name):
         joke_list = list(reader)
     return joke_list
 
-read_joke("jokes.csv")
+def read_reddit():
+    r = requests.get('https://www.reddit.com/r/dadjokes.json', headers={'User-agent': 'jokebot'})
+    jokes = r.json()
+    clean_jokes = []
+    json_data = json.loads(r.text)
+    # print(json_data)
+    # print(jokes)
+    question_list = ["Why", "What", "How"]
+    for joke in json_data["data"]["children"]:
+        if not joke["data"]["over_18"] and joke["data"]["selftext"]:
+            first_word = joke["data"]["title"].split(' ')[0]
+            if first_word in question_list:
+                clean_jokes.append([joke["data"]["title"], joke["data"]["selftext"]])
+    return clean_jokes
+
+# read_reddit()
 
 def main():
-    if (len(sys.argv) < 2):
-        print("No joke file given")
-        exit()
-    file_name = sys.argv[1]
-    jokes_list = read_joke(file_name)
+    if (len(sys.argv) > 1):
+        file_name = sys.argv[1]
+        jokes_list = read_joke(file_name)
+    else:
+        jokes_list = read_reddit()
     for joke in jokes_list:
         deliver(joke[0], joke[1])
         if not read_input():
