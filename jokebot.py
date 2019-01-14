@@ -4,11 +4,13 @@ import sys
 import requests
 import json
 
+
 # Prints prompt, waits 2 seconds, prints punchline
 def deliver(prompt, punchline):
     print(prompt)
     time.sleep(2)
     print(punchline)
+
 
 # Reads user input on whether to proceed or exit
 def read_input():
@@ -20,6 +22,7 @@ def read_input():
     else:
         print("--- I don't understand, please input 'next' or 'quit' ---")
         return read_input()
+
 
 # Reads CSV file and compiles list of jokes
 def read_csv(file_name):
@@ -38,6 +41,7 @@ def read_csv(file_name):
                 joke_list.append(row)
     return joke_list
 
+
 # Compiles jokes from Reddit posts on /r/dadjokes
 def read_reddit():
     r = requests.get('https://www.reddit.com/r/dadjokes.json', headers={'User-agent': 'jokebot'})
@@ -55,7 +59,7 @@ def read_reddit():
 
 
 def main():
-    if (len(sys.argv) > 1):
+    if len(sys.argv) > 1:
         file_name = sys.argv[1]
         jokes_list = read_csv(file_name)
     else:
@@ -66,6 +70,7 @@ def main():
             exit()
     print("--- We're out of jokes! ---")
     exit()
+
 
 if __name__ == '__main__':
     main()
